@@ -1,0 +1,120 @@
+<!-- developed by Minho Lim. //-->
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<title>Responsive jQuery Calendar</title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+
+		<style>
+		html { font-size: 16px; }
+		body { font-size: 1rem; }
+
+		#tab { box-sizing: border-box; padding: 1rem; text-align: center; }
+		.monthTab-list { list-style: none; margin: 0; padding: 0; }
+		.monthTab-list li { display: inline-block; box-sizing: border-box; padding: 1rem; }
+		.monthTab-item { display: block; height: 100px; line-height: 100px; box-sizing: border-box; border: 1px solid #ccc; background: #f1f1f1; }
+		.monthTab-item:hover { cursor: pointer; background: #eee; }
+
+		#cal { box-sizing: border-box; border: 1px solid #eee; border-right: 0; border-bottom: 0; width: 100%; }
+		.singleDay--box { width: 14.28571%; height: 100px; display: inline-block; }
+		.singleDay--content { box-sizing: border-box; height: 100px; border: 1px solid #eee; border-top: 0; border-left: 0; }
+		.singleDay--content.today { background-color: #FFF8E1; }
+
+		@media only screen and (max-width: 750px) {
+			#tab { width: 100%; overflow: hidden; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+			#tab .monthTab-list li { min-width: 100px; padding: .25rem; }
+
+			.singleDay--box { width: 100%; display: block; height: auto; }
+			.singleDay--content { height: auto; padding: 1rem; }
+			.singleDay--content.none { display: none; }
+		}
+		</style>
+	</head>
+	<body>
+		<div id="tab"><ul class="monthTab-list"></ul></div>
+		<div id="cal"></div>
+
+		<script>
+
+		var monthTabCnt = 7; // set number of months for tab menu
+		var startDate = ""; // set start date. if none, then today. ex) 2017-09
+		
+		var initDate = startDate=="" ? new Date() : new Date(startDate);
+		var realToday = new Date(); var realToday_string = realToday.getFullYear()+"-"+(realToday.getMonth()+1)+"-"+realToday.getDate();
+		var date = "", thisYear = "", thisMonth = "", thisDate = "", thisDay = "";
+		var daysInMonth = "", firstDayOfMonth = "", lastDayOfMonth = "";
+		var outputHTML = "";
+
+		function monthTabMenu(){
+			var m = thisMonth, y = thisYear, tabMonth = "", tabMonth_data = "", tabMonth_string = "", printMonth = "";
+			for(var i=0;i<monthTabCnt;i++){
+				var mi = m+i;
+				var tabMonth_temp = mi > 12 ? mi-12 : mi;
+				var tabYear_temp = mi > 12 ? y+1 : y;
+				tabMonth = i==0 ? initDate : new Date(tabYear_temp+" "+tabMonth_temp);
+				tabMonth_data = tabMonth.getFullYear()+"-"+(tabMonth.getMonth()+1)+"-"+tabMonth.getDate();
+				tabMonth_string = tabMonth.getFullYear()+"-"+(tabMonth.getMonth()+1);
+				printMonth += '<li><a class="monthTab-item" data-month="'+tabMonth_data+'">'+tabMonth_string+'</a></li>';
+			}
+			$("#tab .monthTab-list").append(printMonth);
+			$("#tab .monthTab-list li").css({"width":Math.floor(100/monthTabCnt,5)+"%"});
+		}
+
+		function cal(inputDate){
+			outputHTML = "";
+			date = new Date(inputDate);
+			thisYear = date.getFullYear();
+			thisMonth = date.getMonth()+1;
+			thisDate = date.getDate();
+			thisDay = date.getDay();
+
+			daysInMonth = new Date(thisYear, thisMonth, 0).getDate();
+			lastDayOfMonth = new Date(thisYear+" "+thisMonth+" "+daysInMonth).getDay();
+			firstDayOfMonth = new Date(date).getDay();
+
+			for(var i=0;i<firstDayOfMonth;i++){ outputHTML += dayDiv(); }
+			for(var i=thisDate;i<=daysInMonth;i++){ outputHTML += dayDiv(new Date(thisYear+" "+thisMonth+" "+i)); }
+			for(var i=lastDayOfMonth;i<6;i++){ outputHTML += dayDiv(); }
+
+			$("#cal").html(outputHTML);
+		}
+
+		function dayDiv(theDay){
+			var dayContent = "", dayHTML = "";
+
+			if( theDay === undefined || theDay == "" ) {
+				dayContent = '<div class="singleDay--content none">&nbsp;</div>';
+			} else {
+				var theDay_string = theDay.getFullYear()+"-"+(theDay.getMonth()+1)+"-"+theDay.getDate();
+				var printDay = theDay.getDate();
+				var is_today = theDay_string==realToday_string ? true : false;
+
+				// do whatever you want here with theDay object.
+				dayContent = '<div class="singleDay--content '+(is_today?'today':'')+'"><strong>'+printDay+'</strong></div>';
+			}
+			
+			dayHTML = '<div class="singleDay--box">'+dayContent+'</div>';
+			return dayHTML;
+		}
+
+		$(document).ready(function(){
+			cal(initDate);
+			monthTabMenu();
+
+			$(".monthTab-item").on("click",function(){
+				var data_month = $(this).data("month");
+				cal(data_month);
+			});
+		});
+
+		</script>
+
+
+	</body>
+</html>
