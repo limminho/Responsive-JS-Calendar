@@ -24,6 +24,8 @@
 		#cal { box-sizing: border-box; border: 1px solid #eee; border-right: 0; border-bottom: 0; width: 100%; }
 		.singleDay--box { width: 14.28571%; height: 100px; display: inline-block; }
 		.singleDay--content { box-sizing: border-box; height: 100px; border: 1px solid #eee; border-top: 0; border-left: 0; }
+		.singleDay--box.dateString { height: auto; }
+		.singleDay--box.dateString .singleDay--content { height: 30px; font-weight: bold; text-align: center; line-height: 30px; }
 		.singleDay--content.today { background-color: #FFF8E1; }
 
 		@media only screen and (max-width: 750px) {
@@ -77,6 +79,9 @@
 			daysInMonth = new Date(thisYear, thisMonth, 0).getDate();
 			lastDayOfMonth = new Date(thisYear+" "+thisMonth+" "+daysInMonth).getDay();
 			firstDayOfMonth = new Date(date).getDay();
+
+			var dateString = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+			for(var i=0;i<7;i++){ outputHTML += '<div class="singleDay--box dateString"><div class="singleDay--content none">'+dateString[i]+'</div></div>'; }
 
 			for(var i=0;i<firstDayOfMonth;i++){ outputHTML += dayDiv(); }
 			for(var i=thisDate;i<=daysInMonth;i++){ outputHTML += dayDiv(new Date(thisYear+" "+thisMonth+" "+i)); }
